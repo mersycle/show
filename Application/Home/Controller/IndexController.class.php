@@ -15,7 +15,9 @@ class IndexController extends Controller {
     }
     public function index(){
         $this->checkUser();
+        $world = "aaa";
         $this->assign("account",$_SESSION[C("SESS_ACCOUNT")]);
+        $this->assign('world',$world);
         $this->display();
     }
     public function reg(){
@@ -57,7 +59,7 @@ class IndexController extends Controller {
     }
     
     public function login(){
-       
+//       echo __Public__;DIE;
         if(!empty($_SESSION[C("SESS_ACCOUNT")])){
             $this->success("你已经登录了","/home/index/index");
         }else{
