@@ -8,6 +8,17 @@ class IndexController extends Controller {
         $redis->select(0);
         return $redis;
     }
+    
+    protected function hx(){
+       vendor("emchat-server-php.Easemob"); 
+       $options['client_id']='YXA62n8RwKTrEee_L7erL4P7Mw';
+        $options['client_secret']='YXA6MQjOAFUJ8vYEu1NYkXw3B4KWSws';
+        $options['org_name']='attitude';
+        $options['app_name']='helloworld';
+
+        $h=new \Easemob($options);
+        return $h;
+    }
     protected function checkUser(){
         if(empty($_SESSION[C("SESS_ACCOUNT")])){
             $this->error("请登录","/home/index/login"); 
@@ -28,6 +39,8 @@ class IndexController extends Controller {
             if(empty($_POST)){
                 $this->display();
             }else{
+               
+                
                 $data["account"] = I("post.account");
                 $data["pass"] = I("post.pass");
                 if(empty($data["account"])){
@@ -35,23 +48,44 @@ class IndexController extends Controller {
                 }elseif(empty($data["pass"])){
                     $this->error("密码不能为空");
                 }
+                
+                
+                
+                
                 $redis = $this->init(0);
-
                 $info = $redis->get($data["account"]);
 
                 if(!$info){
                     $res = M("User")->add($data);
-                    if($res){
-                        $uid = M("User")->getLastInsID();
-                        $resa = $redis->set($data["account"],$uid);
+                    if(empty($res)){
+                        $redis->close();
+                        $this->error("注册失败，mysql");
                     }
-                }
-                $redis->close();
-                if(empty($resa)){
-                    $this->error("注册失败");
-                }else{
+
+                    $uid = M("User")->getLastInsID();
+                    $hx = $this->hx();
+                    $hx_res = $hx->createUser($data["account"],$data["pass"]);
+//                    $hx_res = json_decode($hx_res);
+//                    print_r($hx_res["entities"]);die;
+                    if(empty($hx_res["entities"][0]["uuid"])){
+                        M("User")->where(array("id"=>$uid))->delete();
+                        $redis->close();
+                        $this->error("注册失败，环信");
+                    }
+                    
+                    $resa = $redis->set($data["account"],$uid);
+                    if(empty($resa)){
+                        M("User")->where(array("id"=>$uid))->delete();
+                        $hx->deleteUser($data["account"]);
+                        $redis->close();
+                        $this->error("注册失败，redis");
+                    }
                     $this->success("注册成功","/home/index/login");
+                }else{
+                    $redis->close();
+                    $this->error("注册失败,该账号已存在");
                 }
+                
             }
         }
         
@@ -103,5 +137,13 @@ class IndexController extends Controller {
             $this->success("已经退出","/home/index/login");
         }
     }
-   
+    
+    public function chat(){
+        
+        $this->display();
+    }
+    
+    public function demo(){
+        $this->display();
+    }
 }
