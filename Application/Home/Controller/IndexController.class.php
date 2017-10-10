@@ -39,14 +39,14 @@ class IndexController extends Controller {
             if(empty($_POST)){
                 $this->display();
             }else{
-               
-                
                 $data["account"] = I("post.account");
-                $data["pass"] = I("post.pass");
-                if(empty($data["account"])){
-                    $this->error("账户不能为空");
-                }elseif(empty($data["pass"])){
-                    $this->error("密码不能为空");
+                $data["yanzheng"] = I("post.yanzheng");
+                $data["pass"] = I("post.pass1");
+                $data["pass2"] = I("post.pass2");
+                if(empty($data["account"]) || empty($data["yanzheng"]) || empty($data["pass"]) || empty($data["pass2"])){
+                    $this->error("信息请填写完整！");
+                }elseif($data["pass"] != $data["pass2"]){
+                    $this->error("两次密码不一致！");
                 }
                 
                 
@@ -138,12 +138,31 @@ class IndexController extends Controller {
         }
     }
     
+    public function sendVerify($mobile){
+            $verify=rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
+            $data['mobile']=$mobile;
+            $data['sendtime']=time()+C('SMSTIME');
+            $data['verify']=$verify;
+            $content="帅哥告诉你，验证码为".$verify."，1分钟内有效。";
+            if($re){
+                    if(C('TEST_CLOSE')){
+                            sendSMS(array($mobile),$content);
+                            return $verify;
+                    }else{
+                            return sendSMS(array($mobile),$content);
+                    }
+            }else{
+                    return false;
+            }
+    }
     public function chat(){
-        
-        $this->display();
+        $number = I("post.number");
+//        $res = sendSMS(array($number),"恭喜你，你中奖了！");
+        echo true;
     }
     
     public function demo(){
         $this->display();
     }
+    
 }

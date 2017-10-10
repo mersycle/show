@@ -19,6 +19,14 @@ return array(
     'DB_MASTER_NUM'         =>  1, // 读写分离后 主服务器数量
     'DB_SLAVE_NO'           =>  '', // 指定从服务器序号
     
-    "SESS_ACCOUNT"              =>"account",
+    "SESS_ACCOUNT"          =>"account",
     "SESS_UID"              =>"uid",
+    
+    /*亿美短信*/
+    "YM_WGURL"				=> 'http://hprpt2.eucp.b2m.cn:8080/sdk/SDKService?wsdl',  					/*亿美短信接口网关*/
+    "YM_SERIAL"				=> '8SDK-EMY-6699-SBYNM',  	/*亿美短信接口序列号*/
+    "YM_PWD" 				=> '962147',				/*亿美短信接口密码*/
+    "YM_SESSION_KEY" 			=> '388031',				/*亿美短信接口session_key,需要去配置*/
+    /*短信有效期*/
+    "SMSTIME"				=> 900,
 );
