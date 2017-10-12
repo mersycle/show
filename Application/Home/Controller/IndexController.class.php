@@ -143,7 +143,7 @@ class IndexController extends Controller {
             $data['mobile']=$mobile;
             $data['sendtime']=time()+C('SMSTIME');
             $data['verify']=$verify;
-            $content="帅哥告诉你，验证码为".$verify."，1分钟内有效。";
+            $content="帅哥告诉你，验证码为".$verify."，15分钟内有效。";
             if($re){
                     if(C('TEST_CLOSE')){
                             sendSMS(array($mobile),$content);
@@ -157,7 +157,8 @@ class IndexController extends Controller {
     }
     public function chat(){
         $number = I("post.number");
-//        $res = sendSMS(array($number),"恭喜你，你中奖了！");
+        $number = "";
+//      $res = sendSMS(array($number),"你快别不搭理我了- -！");
         echo true;
     }
     

@@ -27,7 +27,7 @@ function send_set(){
 
 function sendSMS($mobile=array(),$content){
 	$client = send_set();
-	$contents=strpos('start'.$content,'【塔里木大学】')===false?'【塔里木大学】'.$content:$content;
+	$contents=strpos('start'.$content,'【小人请罪】')===false?'【小人请罪】'.$content:$content;
         
 	$statusCode = $client->sendSMS($mobile,$contents);
 	return $statusCode;
