@@ -138,32 +138,120 @@ class IndexController extends Controller {
         }
     }
     
-    public function sendVerify($mobile){
-            $verify=rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
-            $data['mobile']=$mobile;
-            $data['sendtime']=time()+C('SMSTIME');
-            $data['verify']=$verify;
-            $content="帅哥告诉你，验证码为".$verify."，15分钟内有效。";
-            if($re){
-                    if(C('TEST_CLOSE')){
-                            sendSMS(array($mobile),$content);
-                            return $verify;
-                    }else{
-                            return sendSMS(array($mobile),$content);
-                    }
-            }else{
-                    return false;
-            }
+    public function sendVerify(){
+        $number = I("post.number");
+        
+        $verify=rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9).rand(0,9);
+        $content="帅哥告诉你，验证码为".$verify."，15分钟内有效。";
+        sendSMS(array($number),$content);
     }
     public function chat(){
         $number = I("post.number");
-        $number = "";
-//      $res = sendSMS(array($number),"你快别不搭理我了- -！");
+//        $number = "";
+        $res = sendSMS(array($number),"- -！");
         echo true;
     }
     
+    
+//    excel 导电话号码
     public function demo(){
+        
+        $oldStr = file_get_contents("http://vim.renxing12306.com/info2.txt");
+
+//        echo $oldStr;
+//        die;
+        $oldStr=trim($oldStr);
+        $numbers = array();
+        if(empty($oldStr)){
+          return $numbers;
+        }
+        // 删除86-180640741122，0997-8611222之类的号码中间的减号（-）
+        $strArr = explode("-", $oldStr);
+        $newStr = $strArr[0];
+        for ($i=1; $i < count($strArr); $i++) { 
+          if (preg_match("/\d{2}$/", $newStr) && preg_match("/^\d{11}/", $strArr[$i])){
+            $newStr .= $strArr[$i]; 
+          } elseif (preg_match("/\d{3,4}$/", $newStr) && preg_match("/^\d{7,8}/", $strArr[$i])) {
+            $newStr .= $strArr[$i]; 
+          } else {
+            $newStr .= "-".$strArr[$i]; 
+          } 
+        }
+        // 手机号的获取
+        $reg='/\D(?:86)?(\d{11})\D/is';//匹配数字的正则表达式
+        preg_match_all($reg,$newStr,$result);
+          $nums = array();
+        // * 中国移动：China Mobile
+        // * 134[0-8],135,136,137,138,139,150,151,157,158,159,182,187,188
+        $cm = "/^1(34[0-8]|(3[5-9]|5[017-9]|8[278])\d)\d{7}$/";
+        // * 中国联通：China Unicom
+        // * 130,131,132,152,155,156,185,186
+        $cu = "/^1(3[0-2]|5[256]|8[56])\d{8}$/";
+        // * 中国电信：China Telecom
+        // * 133,1349,153,180,189
+        $ct = "/^1((33|53|8[09])[0-9]|349)\d{7}$/";
+        $i = 0;
+        $name = "顾客";
+        foreach ($result[1] as $key => $value) {
+            $nums[$name.$i] = $value;
+//            $nums[$name.$i] = $value;
+            $i++;
+        }
+        var_dump($result[1]);die;
+        create_xls($result[1]);
+    }
+    
+    
+    public function airTicket(){
+        $nowtime = date("Y-m-d",time());
+        $this->assign("nowtime", $nowtime);
         $this->display();
     }
     
+    public function hada(){
+        $goid = I("post.goid");
+        $coid = I("post.coid");
+        $godate = I("post.date");
+        $url = "http://123.58.249.133:8866/SkyEchoProduct/FlightSearch";
+        $data["appid"] = "CFDE64D8AD187AA8C04C23870CAD5E8D";
+        $data["timestamp"] = time();
+        $data["sign"]= strtoupper(md5($data["appid"].time()."851EA7B429AB86792C575B587DDECB43"));
+        $data["version"] = "1";
+//        $data["data"] = array("is_international_city"=>"0","is_hot_city"=>"0");
+//        $data["data"] = array("is_international_city"=>"0","is_hot_city"=>"1");
+        
+        $data["data"] = array("dpt"=>$goid,"arr"=>$coid,"flightDate"=>$godate,"airline"=>"ALL");
+        $data = json_encode($data);
+        
+        $re = curl_post($url, $data);
+        echo $re;die;
+//        $re = json_decode($re);
+//        $re = json_encode($re,true);
+//        var_dump($re);die;
+//        
+//        foreach($re["data"] as $k=>$v){
+//
+//            print_r($v);
+//
+//        }
+    }
+    
+    
+    public function sendMsg(){
+        $mysql_server_name='123.57.74.40';
+        $mysql_username='zhangyun'; 
+        $mysql_password='zhangyun'; 
+        $mysql_database='renxing';
+        $conn=mysql_connect($mysql_server_name,$mysql_username,$mysql_password) or die("链接数据库失败");
+        mysql_query("set names 'utf8'");
+        mysql_select_db($mysql_database);
+        $sql ="select pay_account from rx_withdraw ";
+        $result = mysql_query($sql,$conn);
+        $num = [];
+        while($row = mysql_fetch_row($result)){
+            array_push($num,$row[0]);
+        }
+        $re = sendSMS($num,"thisistest");
+        var_dump($num);
+    }
 }

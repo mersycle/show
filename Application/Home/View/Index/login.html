@@ -167,15 +167,10 @@
 </head>
 <body>
     <div class="htmleaf-container">
-            <header class="htmleaf-header">
-			<h1>帅的人　才能看的到 <span>Mr Zhang</span></h1>
-<!--			<div class="htmleaf-links">
-				<a class="htmleaf-icon icon-htmleaf-home-outline" href="http://www.htmleaf.com/" title="jQuery之家" target="_blank"><span> jQuery之家</span></a>
-				<a class="htmleaf-icon icon-htmleaf-arrow-forward-outline" href="http://www.htmleaf.com/html5/html5-canvas/201707294656.html" title="返回下载页" target="_blank"><span> 返回下载页</span></a>
-			</div>-->
-            </header>
+        <header class="htmleaf-header">
+                    <h1>帅的人　才能看的到 <span>Mr Zhang</span></h1>
+        </header>
         <div id="wrapper" class="login-page">
-            
             <div id="login_form" class="form">
                 <form class="login-form" action="/home/index/login" method="post">
                     <input type="text" placeholder="用户名" id="user_name" name="account"/>
@@ -204,19 +199,9 @@
             }
         }
         $(function(){
-            $("#create").click(function(){
-                    check_register();
-                    return false;
-            })
             $("#login").click(function(){
                     check_login();
                     return false;
-            })
-            $('.message a').click(function () {
-                $('form').animate({
-                    height: 'toggle',
-                    opacity: 'toggle'
-                }, 'slow');
             });
         })
     </script>

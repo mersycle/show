@@ -186,10 +186,7 @@
     <div class="htmleaf-container">
             <header class="htmleaf-header">
 			<h1>帅的人　才能看的到 <span>Mr Zhang</span></h1>
-<!--			<div class="htmleaf-links">
-				<a class="htmleaf-icon icon-htmleaf-home-outline" href="http://www.htmleaf.com/" title="jQuery之家" target="_blank"><span> jQuery之家</span></a>
-				<a class="htmleaf-icon icon-htmleaf-arrow-forward-outline" href="http://www.htmleaf.com/html5/html5-canvas/201707294656.html" title="返回下载页" target="_blank"><span> 返回下载页</span></a>
-			</div>-->
+
             </header>
         <div id="wrapper" class="login-page">
             
@@ -198,7 +195,7 @@
                     <input type="text" placeholder="请输入手机号" id="r_user_name" name="account"/>
                     <input type="text" placeholder="验证码" id="yanzheng" name="yanzheng"/><button id="yanz" type="button">获取验证码</button>
                     <input type="password" placeholder="设置密码" id="r_password" name="pass1"/>
-                    <input type="password" placeholder="确认密码"  name="pass2"/>
+                    <input type="password" placeholder="确认密码" id="r_password2"  name="pass2"/>
                     <button id="create" type="submit">创建账户</button>
                     <p class="message">已经有了一个账户? <a href="/home/index/login">立刻登录</a></p>
                   </form>
@@ -218,14 +215,13 @@
             if(flag){
                 
                 $.ajax({
-                    url:"/home/index/chat",
+                    url:"/home/index/sendVerify",
                     type:"POST",
                     dataType:"json",
                     data:{"number":account},
                     success:function(mes){
                         if(mes==true){
-
-//                            $("#yanz").html("短信已发送");
+                            
                         }
                     }
                 });
@@ -245,7 +241,8 @@
                                 }
                             },1000);
             }else{
-                alert("填写正确手机号码");
+                check_ver();
+                return false;
             }
             
         });
@@ -277,9 +274,11 @@
         
         
         function check_login(){
-            var name=$("#user_name").val();
-            var pass=$("#password").val();
-            if(name!="" && pass!=""){
+            var name=$("#r_user_name").val();
+            var yanzheng=$("#yanzheng").val();
+            var password1=$("#r_password").val();
+            var password2=$("#r_password2").val();
+            if( name!="" && yanzheng!="" && password1!="" && password2!=""){
                 contiue;
             }else{
                 $("#login_form").removeClass('shake_effect');  
@@ -288,20 +287,27 @@
                     },1);  
             }
         }
+
+        
+        function check_ver(){
+            var yanzheng=$("#yanzheng").val();
+            
+            if(yanzheng!=""){
+                contiue;
+            }else{
+                $("#login_form").removeClass('shake_effect');  
+                    setTimeout(function(){
+                        $("#login_form").addClass('shake_effect')
+                    },1);  
+            }
+        }
+        
+        
+        
         $(function(){
             $("#create").click(function(){
-                    check_register();
-                    return false;
-            })
-            $("#login").click(function(){
                     check_login();
                     return false;
-            })
-            $('.message a').click(function () {
-                $('form').animate({
-                    height: 'toggle',
-                    opacity: 'toggle'
-                }, 'slow');
             });
         })
     </script>
